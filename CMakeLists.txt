@@ -16,6 +16,7 @@ set(as_subproject fineftp)
 include(msvc_sourcetree.cmake)
 
 string(COMPARE EQUAL "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}" _cmp)
+set(_cmp True)
 if (_cmp)
   macro(find_package)
     if(NOT "${ARGV0}" IN_LIST as_subproject)
