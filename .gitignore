@@ -11,3 +11,6 @@ ipch
 /_install
 /.vs
 /CMakeLists.txt.user
+.cache
+*~
+build/
