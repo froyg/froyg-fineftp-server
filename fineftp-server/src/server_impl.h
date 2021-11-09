@@ -7,6 +7,8 @@
 
 #include <asio.hpp>
 
+#include <fineftp/froyg-url-provider.h>
+
 #include <ftp_session.h>
 
 #include <ftp_user.h>
@@ -17,7 +19,7 @@ namespace fineftp
   class FtpServerImpl
   {
   public:
-    FtpServerImpl(const std::string& address, uint16_t port);
+    FtpServerImpl(froyg::UrlProvider* url_provider, const std::string& address, uint16_t port);
 
     ~FtpServerImpl();
 
@@ -48,5 +50,6 @@ namespace fineftp
     asio::ip::tcp::acceptor  acceptor_;
 
     std::atomic<int> open_connection_count_;
+    froyg::UrlProvider* url_provider_ = nullptr;
   };
 }

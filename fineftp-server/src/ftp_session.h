@@ -5,6 +5,8 @@
 #include <deque>
 #include <fstream>
 
+#include <fineftp/froyg-url-provider.h>
+
 #include "ftp_message.h"
 
 #include "filesystem.h"
@@ -44,7 +46,7 @@ namespace fineftp
   // Public API
   ////////////////////////////////////////////////////////
   public:
-    FtpSession(asio::io_service& io_service, const UserDatabase& user_database, const std::function<void()>& completion_handler);
+    FtpSession(froyg::UrlProvider* url_provider, asio::io_service& io_service, const UserDatabase& user_database, const std::function<void()>& completion_handler);
 
     ~FtpSession();
 
@@ -114,6 +116,7 @@ namespace fineftp
     void sendNameList           (const std::map<std::string, Filesystem::FileStatus>& directory_content);
 
     void sendFile               (std::shared_ptr<IoFile>                file);
+    void sendData            (std::shared_ptr<std::vector<char>> data);
 
     void readDataFromFileAndSend(std::shared_ptr<IoFile>                file
                                , std::shared_ptr<asio::ip::tcp::socket> data_socket);
@@ -204,5 +207,6 @@ namespace fineftp
 
     // Current state
     std::string ftp_working_directory_;
+    froyg::UrlProvider* url_provider_ = nullptr;
   };
 }

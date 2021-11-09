@@ -17,3 +17,11 @@ add_executable (${PROJECT_NAME}
 target_link_libraries (${PROJECT_NAME}
     fineftp::server
 )
+
+add_executable (froyg-url-provider-example
+  src/main-froyg-url-provider.cpp
+)
+
+target_link_libraries (froyg-url-provider-example
+    fineftp::server
+)
