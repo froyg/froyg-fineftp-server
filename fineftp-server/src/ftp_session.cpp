@@ -461,10 +461,12 @@ namespace fineftp
 
     auto absolute_ftp_path = toAbsoluteFtpPath(param);
     if ((url_provider_ != nullptr) && (url_provider_->can_handle_path(absolute_ftp_path))) {
-      sendFtpMessage(FtpReplyCode::FILE_STATUS_OK_OPENING_DATA_CONNECTION, "Sending file");
       auto data = url_provider_->get_content(absolute_ftp_path);
-      sendData(data);
-      return;
+      if (data != nullptr) {
+        sendFtpMessage(FtpReplyCode::FILE_STATUS_OK_OPENING_DATA_CONNECTION, "Sending file");
+        sendData(data);
+        return;
+      }
     }
     
     std::string local_path = fineftp::Filesystem::cleanPathNative(logged_in_user_->local_root_path_ + "/" + absolute_ftp_path);
