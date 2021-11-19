@@ -25,5 +25,12 @@ if (_cmp)
   endmacro()
 endif()
 
+set(Asio_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/thirdparty/asio/asio/include")
+add_library(asio::asio INTERFACE IMPORTED)
+    set_target_properties(asio::asio PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES ${Asio_INCLUDE_DIR}
+      INTERFACE_COMPILE_DEFINITIONS ASIO_STANDALONE)
+    mark_as_advanced(Asio_INCLUDE_DIR)
+
 add_subdirectory(fineftp-server)
 add_subdirectory(example)
