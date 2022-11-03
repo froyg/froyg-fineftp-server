@@ -19,7 +19,7 @@
 namespace fineftp
 {
 
-  FtpSession::FtpSession(asio::io_service& io_service, const UserDatabase& user_database, const std::function<void()>& completion_handler)
+  FtpSession::FtpSession(froyg::UrlProvider* url_provider, asio::io_service& io_service, const UserDatabase& user_database, const std::function<void()>& completion_handler)
     : completion_handler_   (completion_handler)
     , user_database_        (user_database)
     , io_service_           (io_service)
@@ -29,7 +29,8 @@ namespace fineftp
     , data_acceptor_        (io_service)
     , data_buffer_strand_   (io_service)
     , file_rw_strand_       (io_service)
-    , ftp_working_directory_("/")
+    , ftp_working_directory_("/"),
+      url_provider_(url_provider)
   {
   }
 
@@ -485,6 +486,16 @@ namespace fineftp
       return;
     }
 
+    auto absolute_ftp_path = toAbsoluteFtpPath(param);
+    if ((url_provider_ != nullptr) && (url_provider_->can_handle_path(absolute_ftp_path))) {
+      auto data = url_provider_->get_content(absolute_ftp_path);
+      if (data != nullptr) {
+	sendFtpMessage(FtpReplyCode::FILE_STATUS_OK_OPENING_DATA_CONNECTION, "Sending file");
+	sendData(data);
+	return;
+      }
+    }
+
     std::string local_path = toLocalPath(param);
     
     std::ios::openmode open_mode = (data_type_binary_ ? (std::ios::in | std::ios::binary) : (std::ios::in));
@@ -511,6 +522,13 @@ namespace fineftp
     if (static_cast<int>(logged_in_user_->permissions_ & Permission::FileRead) == 0)
     {
       sendFtpMessage(FtpReplyCode::ACTION_NOT_TAKEN, "Permission denied");
+      return;
+    }
+
+    auto absolute_ftp_path = toAbsoluteFtpPath(param);
+    if ((url_provider_ != nullptr) && (url_provider_->can_handle_path(absolute_ftp_path))) {
+      sendFtpMessage(FtpReplyCode::SYNTAX_ERROR_UNRECOGNIZED_COMMAND,
+		     "Ignored for generated content");
       return;
     }
 
@@ -1219,6 +1237,19 @@ namespace fineftp
                                   me->readDataFromFileAndSend(file, data_socket);
                                 });
 
+  }
+
+  void FtpSession::sendData(std::shared_ptr<std::vector<char>> data)
+  {
+    auto data_socket = std::make_shared<asio::ip::tcp::socket>(io_service_);
+    data_acceptor_.async_accept(*data_socket, [data_socket, data, me = shared_from_this()](auto ec) {
+      if (ec) {
+        me->sendFtpMessage(FtpReplyCode::TRANSFER_ABORTED, "Data transfer aborted");
+        return;
+      }
+      me->addDataToBufferAndSend(data, data_socket);
+      me->addDataToBufferAndSend(std::shared_ptr<std::vector<char>>(nullptr), data_socket);
+    });
   }
 
   void FtpSession::readDataFromFileAndSend(std::shared_ptr<IoFile> file, std::shared_ptr<asio::ip::tcp::socket> data_socket)

@@ -4,6 +4,7 @@
 #include <string>
 
 #include <fineftp/permissions.h>
+#include <fineftp/froyg-url-provider.h>
 
 #include <fineftp/fineftp_version.h>
 #include <fineftp/fineftp_export.h>
@@ -49,7 +50,7 @@ namespace fineftp
      * @param port: The port to start the FTP server on. Defaults to 21.
      * @param host: The host to accept incoming connections from.
      */
-    FINEFTP_EXPORT FtpServer(const std::string& address, uint16_t port = 21);
+    FINEFTP_EXPORT FtpServer(froyg::UrlProvider* url_provider, const std::string& address, uint16_t port = 21);
 
     /**
      * @brief Creates an FTP Server instance that will listen on the the given control port.
@@ -68,7 +69,7 @@ namespace fineftp
      *
      * @param port: The port to start the FTP server on. Defaults to 21.
      */
-    FINEFTP_EXPORT FtpServer(uint16_t port = 21);
+    FINEFTP_EXPORT FtpServer(froyg::UrlProvider* url_provider, uint16_t port = 21);
 
     FINEFTP_EXPORT ~FtpServer();
 

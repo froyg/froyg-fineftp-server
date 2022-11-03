@@ -5,12 +5,12 @@
 
 namespace fineftp
 {
-  FtpServer::FtpServer(const std::string& address, uint16_t port)
-    : ftp_server_(std::make_unique<FtpServerImpl>(address, port))
+  FtpServer::FtpServer(froyg::UrlProvider* url_provider, const std::string& address, uint16_t port)
+    : ftp_server_(std::make_unique<FtpServerImpl>(url_provider, address, port))
   {}
 
-  FtpServer::FtpServer(uint16_t port)
-    : FtpServer(std::string("0.0.0.0"), port)
+  FtpServer::FtpServer(froyg::UrlProvider* url_provider, uint16_t port)
+    : FtpServer(url_provider, std::string("0.0.0.0"), port)
   {}
 
   FtpServer::~FtpServer()
