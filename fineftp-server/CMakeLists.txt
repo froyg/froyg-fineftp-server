@@ -10,7 +10,6 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 find_package(Threads REQUIRED)
-find_package(asio REQUIRED)
 
 # Include GenerateExportHeader that will create export macros for us
 include(GenerateExportHeader)
