@@ -12,6 +12,11 @@ ipch
 /_install
 /.vs
 /CMakeLists.txt.user
+.cache
+*~
+build/
+*.*-workspace
+*.*-project
 
 # Common build directories in CMake projects
 build*
